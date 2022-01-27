@@ -1,5 +1,6 @@
 CREATE SCHEMA `esm` ;
 
+#Create the tables
 CREATE TABLE `esm`.`FactoryDevices` (
   `id` INT NOT NULL,
   `name` VARCHAR(68) NOT NULL,
@@ -21,3 +22,6 @@ CREATE TABLE `esm`.`MaintenanceTasks` (
     REFERENCES `esm`.`FactoryDevices` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+
+#Import sample data
+#WIP
