@@ -1,51 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using EtteplanMORE.ServiceManual.ApplicationCore.Entities;
 using EtteplanMORE.ServiceManual.ApplicationCore.Interfaces;
+using MySql.Data.MySqlClient;
 
 namespace EtteplanMORE.ServiceManual.ApplicationCore.Services
 {
     public class FactoryDeviceService : IFactoryDeviceService
     {
-        /// <summary>
-        ///     Remove this. Temporary device storage before proper data storage is implemented.
-        /// </summary>
-        private static readonly ImmutableList<FactoryDevice> TemporaryDevices = new List<FactoryDevice>
-        {
-            new FactoryDevice
-            {
-                Id = 1,
-                Name = "Device X",
-                Year = 2001,
-                Type = "Type 10"
-            },
-            new FactoryDevice
-            {
-                Id = 2,
-                Name = "Device Y",
-                Year = 2012,
-                Type = "Type 3"
-            },
-            new FactoryDevice
-            {
-                Id = 3,
-                Name = "Device Z",
-                Year = 1985,
-                Type = "Type 1"
-            }
-        }.ToImmutableList();
-
         public async Task<IEnumerable<FactoryDevice>> GetAll()
         {
-            return await Task.FromResult(TemporaryDevices);
+            return await DapperQuery("SELECT * FROM FactoryDevices");
         }
 
         public async Task<FactoryDevice> Get(int id)
         {
-            return await Task.FromResult(TemporaryDevices.FirstOrDefault(c => c.Id == id));
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", id);
+            var result = await DapperQueryParameters("SELECT * FROM FactoryDevices WHERE id = @Id", parameters);
+            
+            return result.FirstOrDefault();
+        }
+
+        // Query without parameters
+        private async Task<IEnumerable<FactoryDevice>> DapperQuery(string query)
+        {
+            using (IDbConnection connection = new MySqlConnection(Helper.ConnectionString()))
+            {
+                return await connection.QueryAsync<FactoryDevice>(query);
+            }
+        }
+
+        // Query with Dapper's DynamicParameters Bag
+        private async Task<IEnumerable<FactoryDevice>> DapperQueryParameters(string query, DynamicParameters parameters)
+        {
+            using (IDbConnection connection = new MySqlConnection(Helper.ConnectionString()))
+            {
+                return await connection.QueryAsync<FactoryDevice>(query, parameters);
+            }
         }
     }
 }
