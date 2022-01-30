@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using EtteplanMORE.ServiceManual.ApplicationCore.Entities;
@@ -10,31 +11,35 @@ namespace EtteplanMORE.ServiceManual.ApplicationCore.Services
 {
     public class MaintenanceTaskService : IMaintenanceTaskService
     {
-        public Task<IEnumerable<MaintenanceTask>> GetAll()
+        public async Task<IEnumerable<MaintenanceTask>> GetAll()
         {
-            throw new System.NotImplementedException();
+            return await DapperQuery("SELECT * FROM MaintenanceTasks");
         }
 
-        public Task<MaintenanceTask> Get(int id)
+        public async Task<MaintenanceTask> Get(int id)
         {
-            throw new System.NotImplementedException();
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", id);
+            var result = await DapperQueryParameters("SELECT * FROM MaintenanceTasks WHERE id = @Id", parameters);
+            
+            return result.FirstOrDefault();
         }
         
         // Query without parameters
-        private async Task<IEnumerable<FactoryDevice>> DapperQuery(string query)
+        private async Task<IEnumerable<MaintenanceTask>> DapperQuery(string query)
         {
             using (IDbConnection connection = new MySqlConnection(Helper.ConnectionString()))
             {
-                return await connection.QueryAsync<FactoryDevice>(query);
+                return await connection.QueryAsync<MaintenanceTask>(query);
             }
         }
 
         // Query with Dapper's DynamicParameters Bag
-        private async Task<IEnumerable<FactoryDevice>> DapperQueryParameters(string query, DynamicParameters parameters)
+        private async Task<IEnumerable<MaintenanceTask>> DapperQueryParameters(string query, DynamicParameters parameters)
         {
             using (IDbConnection connection = new MySqlConnection(Helper.ConnectionString()))
             {
-                return await connection.QueryAsync<FactoryDevice>(query, parameters);
+                return await connection.QueryAsync<MaintenanceTask>(query, parameters);
             }
         }
     }
