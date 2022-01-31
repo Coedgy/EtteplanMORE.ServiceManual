@@ -13,7 +13,7 @@ CREATE TABLE `esm`.`MaintenanceTasks` (
   `deviceId` INT NOT NULL,
   `issueDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `description` VARCHAR(200) NULL,
-  `importance` INT NOT NULL DEFAULT 0,
+  `importance` INT NOT NULL DEFAULT 1,
   `closed` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   INDEX `deviceId_idx` (`deviceId` ASC) VISIBLE,
