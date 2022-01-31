@@ -24,15 +24,7 @@ namespace EtteplanMORE.ServiceManual.Web.Controllers
         [HttpGet]
         public async Task<IEnumerable<FactoryDeviceDto>> Get()
         {
-            return (await _factoryDeviceService.GetAll())
-                .Select(fd => 
-                    new FactoryDeviceDto {
-                        Id = fd.Id,
-                        Name = fd.Name,
-                        Year = fd.Year,
-                        Type = fd.Type
-                    }
-                );
+            return (await _factoryDeviceService.GetAll()).Select(ModelToDto);
         }
 
         /// <summary>
@@ -47,13 +39,18 @@ namespace EtteplanMORE.ServiceManual.Web.Controllers
                 return NotFound();
             }
 
-            return Ok(new FactoryDeviceDto
+            return Ok(ModelToDto(fd));
+        }
+        
+        private static FactoryDeviceDto ModelToDto(FactoryDevice fd)
+        {
+            return new FactoryDeviceDto
             {
                 Id = fd.Id,
                 Name = fd.Name,
                 Year = fd.Year,
                 Type = fd.Type
-            });
+            };
         }
     }
 }
