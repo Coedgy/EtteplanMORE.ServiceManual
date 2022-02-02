@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,8 +39,7 @@ namespace EtteplanMORE.ServiceManual.ApplicationCore.Services
                     return null;
                 }
                 
-                List<MaintenanceTask> list = new List<MaintenanceTask>();
-                list.Add(task);
+                var list = new List<MaintenanceTask> {task};
                 return list;
             }
 
