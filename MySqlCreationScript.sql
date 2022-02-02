@@ -2,7 +2,7 @@ CREATE SCHEMA `esm` ;
 
 #Create the tables
 CREATE TABLE `esm`.`FactoryDevices` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(68) NOT NULL,
   `year` INT NOT NULL,
   `type` VARCHAR(45) NULL,
