@@ -12,10 +12,12 @@ namespace EtteplanMORE.ServiceManual.Web.Controllers
     public class FactoryDevicesController : Controller
     {
         private readonly IFactoryDeviceService _factoryDeviceService;
+        private readonly IMaintenanceTaskService _maintenanceTaskService;
 
-        public FactoryDevicesController(IFactoryDeviceService factoryDeviceService)
+        public FactoryDevicesController(IFactoryDeviceService factoryDeviceService, IMaintenanceTaskService maintenanceTaskService)
         {
             _factoryDeviceService = factoryDeviceService;
+            _maintenanceTaskService = maintenanceTaskService;
         }
 
         /// <summary>
@@ -40,6 +42,25 @@ namespace EtteplanMORE.ServiceManual.Web.Controllers
             }
 
             return Ok(ModelToDto(fd));
+        }
+
+        /// <summary>
+        ///     HTTP GET: api/factorydevices/1/tasks
+        /// </summary>
+        [HttpGet("{id}/tasks")]
+        public async Task<IEnumerable<MaintenanceTaskDto>> GetTasksByDevice(int id)
+        {
+            var tasks = await _maintenanceTaskService.GetByDevice(id);
+
+            return tasks.Select(mt => new MaintenanceTaskDto
+            {
+                Id = mt.Id,
+                DeviceId = mt.DeviceId,
+                IssueDate = mt.IssueDate,
+                Description = mt.Description,
+                Importance = mt.Importance,
+                Closed = mt.Closed
+            });
         }
         
         private static FactoryDeviceDto ModelToDto(FactoryDevice fd)

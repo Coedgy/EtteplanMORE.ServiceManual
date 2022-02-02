@@ -16,7 +16,7 @@ namespace EtteplanMORE.ServiceManual.ApplicationCore.Services
     {
         public async Task<IEnumerable<MaintenanceTask>> GetAll()
         {
-            return await DapperQuery("SELECT * FROM MaintenanceTasks");
+            return await DapperQuery("SELECT * FROM MaintenanceTasks ORDER BY importance desc, issueDate desc");
         }
 
         public async Task<MaintenanceTask> Get(int id)
@@ -28,11 +28,76 @@ namespace EtteplanMORE.ServiceManual.ApplicationCore.Services
             return result.FirstOrDefault();
         }
 
+        public async Task<IEnumerable<MaintenanceTask>> Search(MaintenanceTaskSearch variables)
+        {
+            // If ID set, just return a list with the one task
+            if (variables.Id != 0)
+            {
+                var task = await Get(variables.Id);
+
+                if (task == null)
+                {
+                    return null;
+                }
+                
+                List<MaintenanceTask> list = new List<MaintenanceTask>();
+                list.Add(task);
+                return list;
+            }
+
+            // Build string in parts to avoid redundant query statements. Also add ImportanceMin first so you can append "AND variable = @Variable"
+            var queryString = new StringBuilder("SELECT * FROM MaintenanceTasks WHERE importance >= @ImportanceMin");
+            var parameters = new DynamicParameters();
+
+            if (variables.DeviceId != 0)
+            {
+                parameters.Add("@DeviceId", variables.DeviceId);
+                queryString.Append(" AND deviceId = @DeviceId");
+            }
+
+            if (variables.IssueDateFrom != DateTime.MinValue)
+            {
+                parameters.Add("@IssueDateFrom", variables.IssueDateFrom);
+                queryString.Append(" AND issueDate > @IssueDateFrom");
+            }
+            
+            if (variables.IssueDateTo != DateTime.MinValue)
+            {
+                parameters.Add("@IssueDateTo", variables.IssueDateTo);
+                queryString.Append(" AND issueDate < @IssueDateTo");
+            }
+            
+            if (variables.DescriptionIncludes != null)
+            {
+                parameters.Add("@DescriptionIncludes", $"%{ variables.DescriptionIncludes }%"); //Add wildcards
+                queryString.Append(" AND description LIKE @DescriptionIncludes");
+            }
+
+            if (variables.ImportanceMax != 0)
+            {
+                parameters.Add("@ImportanceMax", variables.ImportanceMax);
+                queryString.Append(" AND importance <= @ImportanceMax");
+            }
+
+            if (variables.Closed != null)
+            {
+                parameters.Add("@Closed", variables.Closed);
+                queryString.Append(" AND closed = @Closed");
+            }
+
+            parameters.Add("@ImportanceMin", variables.ImportanceMin);
+            queryString.Append(" ORDER BY importance desc, issueDate desc");
+            
+            var result = await DapperQueryParameters(queryString.ToString(), parameters);
+
+            return result;
+        }
+
         public async Task<IEnumerable<MaintenanceTask>> GetByDevice(int deviceId)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@DeviceId", deviceId);
-            var result = await DapperQueryParameters("SELECT * FROM MaintenanceTasks WHERE deviceId = @DeviceId", parameters);
+            var result = await DapperQueryParameters("SELECT * FROM MaintenanceTasks WHERE deviceId = @DeviceId ORDER BY importance desc, issueDate desc", parameters);
 
             return result;
         }

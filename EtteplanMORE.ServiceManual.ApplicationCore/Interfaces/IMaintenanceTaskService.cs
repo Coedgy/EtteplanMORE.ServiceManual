@@ -10,8 +10,8 @@ namespace EtteplanMORE.ServiceManual.ApplicationCore.Interfaces
         Task<IEnumerable<MaintenanceTask>> GetAll();
 
         Task<MaintenanceTask> Get(int id);
-        
-        //SEARCH
+
+        Task<IEnumerable<MaintenanceTask>> Search(MaintenanceTaskSearch variables);
 
         Task<IEnumerable<MaintenanceTask>> GetByDevice(int deviceId);
 

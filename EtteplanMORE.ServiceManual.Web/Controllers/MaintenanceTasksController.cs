@@ -23,7 +23,9 @@ namespace EtteplanMORE.ServiceManual.Web.Controllers
         [HttpGet]
         public async Task<IEnumerable<MaintenanceTaskDto>> GetTasks()
         {
-            return (await _maintenanceTaskService.GetAll()).Select(ModelToDto);
+            var tasks = await _maintenanceTaskService.GetAll();
+
+            return tasks?.Select(ModelToDto);
         }
         
         //HTTP GET: api/maintenancetasks/1
@@ -39,17 +41,24 @@ namespace EtteplanMORE.ServiceManual.Web.Controllers
             return Ok(ModelToDto(mt));
         }
         
+        //HTTP GET: api/maintenancetasks/search?variables
+        [HttpGet("search")]
+        public async Task<IEnumerable<MaintenanceTaskDto>> SearchTasks(MaintenanceTaskSearch variables)
+        {
+            var tasks = await _maintenanceTaskService.Search(variables);
+            
+            return tasks?.Select(ModelToDto);
+        }
+
         //HTTP GET: api/maintenancetasks/device/1
         [HttpGet("device/{deviceId}")]
         public async Task<IEnumerable<MaintenanceTaskDto>> GetByDevice(int deviceId)
         {
             var tasks = await _maintenanceTaskService.GetByDevice(deviceId);
-            return tasks.Select(ModelToDto);
+            
+            return tasks?.Select(ModelToDto);
         }
-        
-        //HTTP GET: api/maintenancetasks/search?
-        
-        
+
         //HTTP POST: api/maintenancetasks?variables
         [HttpPost]
         public async Task<IActionResult> PostTask(MaintenanceTaskDto taskDto)
