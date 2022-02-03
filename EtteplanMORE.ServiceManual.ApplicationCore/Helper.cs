@@ -1,10 +1,14 @@
-﻿namespace EtteplanMORE.ServiceManual.ApplicationCore
+﻿using System;
+using System.Reflection;
+
+namespace EtteplanMORE.ServiceManual.ApplicationCore
 {
-    internal static class Helper
+    public static class Helper
     {
         public static string ConnectionString(string connectionName = "Default")
         {
-            return System.Configuration.ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
+            var cfg = System.Configuration.ConfigurationManager.OpenExeConfiguration(Assembly.GetExecutingAssembly().Location);
+            return cfg.ConnectionStrings.ConnectionStrings[0].ConnectionString;
         }
     }
 }

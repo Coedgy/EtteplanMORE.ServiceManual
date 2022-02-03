@@ -1,5 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using System.Reflection;
 using EtteplanMORE.ServiceManual.ApplicationCore.Interfaces;
 using EtteplanMORE.ServiceManual.ApplicationCore.Services;
 using Xunit;
@@ -9,7 +9,7 @@ namespace EtteplanMORE.ServiceManual.UnitTests.ApplicationCore.Services.FactoryD
     public class FactoryDeviceGet
     {
         [Fact]
-        public async void AllCars()
+        public async void AllDevices()
         {
             IFactoryDeviceService factoryDeviceService = new FactoryDeviceService();
 
@@ -17,28 +17,28 @@ namespace EtteplanMORE.ServiceManual.UnitTests.ApplicationCore.Services.FactoryD
 
             Assert.NotNull(fds);
             Assert.NotEmpty(fds);
-            Assert.Equal(3, fds.Count);
+            Assert.Equal(50, fds.Count);
         }
 
         [Fact]
-        public async void ExistingCardWithId()
+        public async void ExistingDeviceWithId()
         {
-            IFactoryDeviceService FactoryDeviceService = new FactoryDeviceService();
+            IFactoryDeviceService factoryDeviceService = new FactoryDeviceService();
             int fdId = 1;
 
-            var fd = await FactoryDeviceService.Get(fdId);
+            var fd = await factoryDeviceService.Get(fdId);
 
             Assert.NotNull(fd);
             Assert.Equal(fdId, fd.Id);
         }
 
         [Fact]
-        public async void NonExistingCardWithId()
+        public async void NonExistingDeviceWithId()
         {
-            IFactoryDeviceService FactoryDeviceService = new FactoryDeviceService();
-            int fdId = 4;
+            IFactoryDeviceService factoryDeviceService = new FactoryDeviceService();
+            int fdId = 85;
 
-            var fd = await FactoryDeviceService.Get(fdId);
+            var fd = await factoryDeviceService.Get(fdId);
 
             Assert.Null(fd);
         }
