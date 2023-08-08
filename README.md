@@ -1,3 +1,6 @@
+# Description
+This is a sample project, an elecronic service manual API to track the maintenance of different factory devices
+
 # Configuration and usage
 ## Database
 This project uses MySQL as its' database provider, so you should start by setting a MySQL server up. You can find [MySqlCreationScript.sql](MySqlCreationScript.sql) at the root of the repository for database initialization. To import sample data to the database, run [ImportSampleData.sql](ImportSampleData.sql).
